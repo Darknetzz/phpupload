@@ -7,26 +7,34 @@ function success($message) {
 function failure($message) {
   return "<div class='alert alert-danger'>$message</div>";
 }
-include_once("vendor/autoload.php");
+
+# Uncomment line below if you have PHPMailer installed with composer. Will create error if not.
+// include_once("vendor/autoload.php");
 
 if (!isset($_FILES["fileToUpload"]["name"])) {
   $_FILES["fileToUpload"] = $_FILES["file"];
+  # Line below was added for debug purposes.
   //die(failure("File not uploaded, undefined index.".print_r($_FILES)));
 }
 $target_dir = "uploads/";
 $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
 $uploadOk = 1;
 $enableWhitelist = TRUE;
+# Do not set $enablemail to TRUE unless you have PHPMailer.
 $enablemail = FALSE;
 $filetypeWhitelist = [
-  "jpg", "png",
+  "jpg", "jpeg",
+  "png", "ico",
   "bmp", "gif",
   "zip", "rar",
   "7z", "mp3",
   "txt", "docx",
+  "doc", "ppt",
+  "pptx", "odt",
   "svg", "mp4",
   "avi", "mkv",
   "tgz", "gz",
+  "pdf",
 ];
 function showArray($array) {
   $i = 0;
@@ -41,6 +49,7 @@ function showArray($array) {
   }
   return $fa;
 }
+# Uploads are not restricted to images.
 //$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
 
 if(isset($_POST["upload_file"])) {
@@ -77,6 +86,7 @@ if(isset($_POST["upload_file"])) {
 }
 
 if ($uploadOk == 1 && $enablemail == TRUE) {
+  // Warning: This requires PHPmailer to be installed, but it's a nice way to notify you when files have been uploaded.
   // Import PHPMailer classes into the global namespace
   // These must be at the top of your script, not inside a function
 
@@ -90,18 +100,18 @@ if ($uploadOk == 1 && $enablemail == TRUE) {
       //Server settings
       $mail->SMTPDebug = 0;                                       // Enable verbose debug output
       $mail->isSMTP();                                            // Set mailer to use SMTP
-      $mail->Host       = 'mailout.one.com;send.one.com';  // Specify main and backup SMTP servers
+      $mail->Host       = 'smtpserver.domain';  // Specify main and backup SMTP servers
       $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
-      $mail->Username   = 'kristian@roste.org';                     // SMTP username
-      $mail->Password   = '\G@\N;Z2JJf8Wtw,EEAj^oA6O9zDkcEHFtfV!5Qmh?%yIeGEpk=&\"dAFc3Od6QT';                               // SMTP password
+      $mail->Username   = 'YourEmail@domain';                     // SMTP username
+      $mail->Password   = 'YourPassword';                               // SMTP password
       $mail->SMTPSecure = 'tls';                                  // Enable TLS encryption, `ssl` also accepted
       $mail->Port       = 587;                                    // TCP port to connect to
 
       //Recipients
-      $mail->setFrom('kristian@roste.org', 'Mailer');
-      $mail->addAddress('kristian@roste.org', 'Kristian');     // Add a recipient
+      $mail->setFrom('YourEmail@domain', 'Mailer');
+      $mail->addAddress('YourEmail@domain', 'Mailer');     // Add a recipient
       //$mail->addAddress('ellen@example.com');               // Name is optional
-      $mail->addReplyTo('kristian@roste.org', 'Webmaster');
+      $mail->addReplyTo('YourEmail@domain', 'Webmaster');
       //$mail->addCC('cc@example.com');
       //$mail->addBCC('bcc@example.com');
 
